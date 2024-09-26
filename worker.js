@@ -7564,27 +7564,33 @@ let findFraction = function(fraction, isRoundedDenominator) {
 
 // Finds all connected sub-chunk sections based on inputted manual sections
 let findConnectedSections = function(chunksIn, sections) {
-    let added = false;
-    Object.keys(chunkInfo['sections']).filter((chunk) => chunksIn.hasOwnProperty(chunk)).forEach((chunk) => {
-        Object.keys(chunkInfo['sections'][chunk]).filter((sec) => sec !== "0" && (!sections || !sections.hasOwnProperty(chunk) || !sections[chunk].hasOwnProperty(sec) || !sections[chunk][sec])).forEach((sec) => {
-            if (sections.hasOwnProperty(chunk) && sections[chunk].hasOwnProperty(sec) && sections[chunk][sec] === false) {
-                delete sections[chunk][sec];
-            } else if (!manualSections || !manualSections.hasOwnProperty(chunk) || !manualSections[chunk].hasOwnProperty(sec) || manualSections[chunk][sec] !== false) {
-                if (optOutSections || (chunkInfo['sections'][chunk][sec].filter((connection) => (connection.includes('-') ? (sections.hasOwnProperty(connection.split('-')[0]) && sections[connection.split('-')[0]].hasOwnProperty(connection.split('-')[1])) : chunksIn.hasOwnProperty(connection))).length > 0) || (!!chunkInfo['chunks'][chunk] && chunkInfo['chunks'][chunk].hasOwnProperty('Sections') && !!chunkInfo['chunks'][chunk]['Sections'][sec] && chunkInfo['chunks'][chunk]['Sections'][sec].hasOwnProperty('Connect') && Object.keys(chunkInfo['chunks'][chunk]['Sections'][sec]['Connect']).filter((subChunk) => !!chunkInfo['chunks'][subChunk] && chunkInfo['chunks'][subChunk].hasOwnProperty('Name') && chunksIn.hasOwnProperty(chunkInfo['chunks'][subChunk]['Name']) && chunksIn[chunkInfo['chunks'][subChunk]['Name']] !== false && chunkInfo['chunks'][subChunk]['Name'] !== 'Zanaris').length > 0)) {
-                    if (!sections[chunk]) {
-                        sections[chunk] = {};
+    let added = true;
+
+    while(added === true)
+    {
+        added = false;
+
+        for(let chunk in chunksIn) {
+            let chunkSections = chunkInfo['sections']?.[chunk];
+            if(!chunkSections)
+                continue;
+
+            Object.entries(chunkSections).filter(([sec, connections]) => sec !== "0" && (!sections?.[chunk]?.[sec])).forEach(([sec, connections]) => {
+                if (sections?.[chunk]?.[sec] === false) {
+                    delete sections[chunk][sec];
+                } else if (manualSections?.[chunk]?.[sec] !== false) {
+                    if (optOutSections
+                        || (connections.filter((connection) => (connection.includes('-') ? sections?.[connection.split('-')[0]]?.[connection.split('-')[1]] : chunksIn.hasOwnProperty(connection))).length > 0)
+                        || (chunkInfo['chunks']?.[chunk]?.['Sections']?.[sec]?.['Connect'] && Object.keys(chunkInfo['chunks'][chunk]['Sections'][sec]['Connect']).filter((subChunk) => chunkInfo['chunks']?.[subChunk]?.['Name'] && chunksIn.hasOwnProperty(chunkInfo['chunks'][subChunk]['Name']) && chunksIn[chunkInfo['chunks'][subChunk]['Name']] !== false && chunkInfo['chunks'][subChunk]['Name'] !== 'Zanaris').length > 0)) {
+                        (sections[chunk] ??= {})[sec] = true;
+                        added = true;
                     }
-                    sections[chunk][sec] = true;
-                    added = true;
                 }
-            }
-        });
-    });
-    if (added) {
-        return findConnectedSections(chunksIn, sections);
-    } else {
-        return sections;
+            });
+        }
     }
+
+    return sections;
 }
 
 // Gathers item/object info on all chunk ids passed in
