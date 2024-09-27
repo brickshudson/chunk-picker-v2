@@ -382,30 +382,28 @@ let challengeIsBacklogged = function(skill, challenge) {
 let markSubTasks = function(newValids, skill, challenge, val) {
     let challenges = chunkInfo['challenges'];
     let skillChallenge = challenges[skill][challenge];
+    let taskBaseQuest = skillChallenge['BaseQuest'];
     
-    !!skillChallenge['Tasks'] && Object.keys(skillChallenge['Tasks']).forEach((subTask) => {
+    !!skillChallenge['Tasks'] && Object.entries(skillChallenge['Tasks']).forEach(([subTask,subTaskInfo]) => {
+
+        let xSubTask = subTask;
         if (subTask.includes('[+]') && tasksPlus.hasOwnProperty(subTask.split('[+]x')[0].replaceAll('[+]', '') + '[+]')) {
-            let xSubTask = subTask;
             if (subTask.includes('[+]x')) {
                 xSubTask = subTask.split('[+]x')[0] + '[+]';
             }
+        }
 
-            let subTaskInfo = skillChallenge['Tasks'][subTask];
-            let taskBaseQuest = skillChallenge['BaseQuest'];
-            let subTaskPrefix = challenges[subTaskInfo][xSubTask.split('--')[0]];
-
-            if (!tasksPlus[xSubTask]) {
-                if (!!taskBaseQuest && !!subTaskPrefix && !!subTaskPrefix['BaseQuest'] && taskBaseQuest === subTaskPrefix['BaseQuest'] && !challengeIsBacklogged(skill, challenge) && !subTaskPrefix['ManualShow']) {
-                    newValids[subTaskInfo].hasOwnProperty(xSubTask.split('--')[0]) && (newValids[subTaskInfo][xSubTask.split('--')[0]] = val);
-                }
-            } else {
-                tasksPlus[xSubTask].filter((plus) => { return (!!taskBaseQuest && !!challenges[subTaskInfo][plus.split('--')[0]] && !!challenges[subTaskInfo][plus.split('--')[0]]['BaseQuest'] && taskBaseQuest === challenges[subTaskInfo][plus.split('--')[0]]['BaseQuest'] && !challengeIsBacklogged(skill, challenge) && !challenges[subTaskInfo][plus.split('--')[0]]['ManualShow']) && newValids[subTaskInfo].hasOwnProperty(plus.split('--')[0]) }).forEach((plus) => {
-                    newValids[subTaskInfo][plus.split('--')[0]] = val;
-                });
-            }
+        if (tasksPlus[xSubTask]) {
+            tasksPlus[xSubTask].filter((plus) => {
+                let plusTaskPrefix = plus.split('--')[0];
+                let plusChallengeInfo = challenges[subTaskInfo]?.[plusTaskPrefix];
+                return (!!taskBaseQuest && !!plusChallengeInfo && !!plusChallengeInfo['BaseQuest'] && taskBaseQuest === plusChallengeInfo['BaseQuest'] && !challengeIsBacklogged(skill, challenge) && !plusChallengeInfo['ManualShow']) && newValids[subTaskInfo].hasOwnProperty(plusTaskPrefix);
+            }).forEach((plus) => { newValids[subTaskInfo][plus.split('--')[0]] = val; });
         } else {
-            if (!!skillChallenge['BaseQuest'] && !!challenges[skillChallenge['Tasks'][subTask]][subTask.split('--')[0]] && !!challenges[skillChallenge['Tasks'][subTask]][subTask.split('--')[0]]['BaseQuest'] && skillChallenge['BaseQuest'] === challenges[skillChallenge['Tasks'][subTask]][subTask.split('--')[0]]['BaseQuest'] && !challengeIsBacklogged(skill, challenge) && !challenges[skillChallenge['Tasks'][subTask]][subTask.split('--')[0]]['ManualShow']) {
-                newValids[skillChallenge['Tasks'][subTask]].hasOwnProperty(subTask.split('--')[0]) && (newValids[skillChallenge['Tasks'][subTask]][subTask.split('--')[0]] = val);
+            let subTaskPrefix = xSubTask.split('--')[0];
+            let subTaskChallengeInfo = challenges[subTaskInfo]?.[subTaskPrefix];
+            if (!!taskBaseQuest && taskBaseQuest === subTaskChallengeInfo?.['BaseQuest'] && !challengeIsBacklogged(skill, challenge) && !subTaskChallengeInfo['ManualShow']) {
+                newValids[subTaskInfo].hasOwnProperty(subTaskPrefix) && (newValids[subTaskInfo][subTaskPrefix] = val);
             }
         }
     });
