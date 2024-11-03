@@ -284,12 +284,9 @@ onmessage = function(e) {
             !!craftedBisOverride && Object.keys(craftedBisOverride).forEach((skill) => {
                 craftedBisHighestLevel[skill] = 0;
                 !!craftedBisOverride[skill] && Object.keys(craftedBisOverride[skill]).forEach((name) => {
-                    if (Object.values(highestOverall).includes(chunkInfo['challenges'][skill][name]['Output']) && chunkInfo['challenges'][skill][name]['Level'] > bisOverrideMinLevel[skill] && baseChunkData['items'].hasOwnProperty(chunkInfo['challenges'][skill][name]['Output']) && Object.values(baseChunkData['items'][chunkInfo['challenges'][skill][name]['Output']]).filter((source) => !source.includes(skill)).length === 0) {
+                    if (Object.values(highestOverall).includes(chunkInfo['challenges'][skill][name]['Output']) && chunkInfo['challenges'][skill][name]['Level'] > bisOverrideMinLevel[skill] && craftedBisHighestLevel[skill] < chunkInfo['challenges'][skill][name]['Level'] && baseChunkData['items'].hasOwnProperty(chunkInfo['challenges'][skill][name]['Output']) && Object.values(baseChunkData['items'][chunkInfo['challenges'][skill][name]['Output']]).filter((source) => !source.includes(skill)).length === 0) {
                         craftedBisHighestLevel[skill] = chunkInfo['challenges'][skill][name]['Level'];
-                        if (!toManuallyAdd[skill]) {
-                            toManuallyAdd[skill] = {};
-                        }
-                        toManuallyAdd[skill][name] = true;
+                        toManuallyAdd[skill] = name;
                     }
                 });
                 craftedBisHighestLevel[skill] === 0 && (restartCalcs = true);
@@ -299,25 +296,8 @@ onmessage = function(e) {
                     if (!manualTasks[skill]) {
                         manualTasks[skill] = {};
                     }
-                    Object.keys(toManuallyAdd[skill]).forEach((name) => {
-                        manualTasks[skill][name] = chunkInfo['challenges'][skill][name]['Level'];
-                        chunkInfo['challenges'][skill][name]['Priority'] = -1;
-                        let tasksToProcess = [{ name: name, skill: skill }];
-                        let i = 0;
-                        while (i < tasksToProcess.length && i < 50) {
-                            !!chunkInfo['challenges'][tasksToProcess[i].skill][tasksToProcess[i].name]['Items'] && chunkInfo['challenges'][tasksToProcess[i].skill][tasksToProcess[i].name]['Items'].forEach((item) => {
-                                if (!!baseChunkData['items'][item.replaceAll('*', '')] && Object.keys(baseChunkData['items'][item.replaceAll('*', '')]).length === 1 && Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].includes('-') && !!craftedBisOverride[Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]] && craftedBisOverride[Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]].hasOwnProperty(Object.keys(baseChunkData['items'][item.replaceAll('*', '')])[0])) {
-                                    if (!manualTasks[Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]]) {
-                                        manualTasks[Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]] = {};
-                                    }
-                                    manualTasks[Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]][Object.keys(baseChunkData['items'][item.replaceAll('*', '')])[0]] = chunkInfo['challenges'][Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]][Object.keys(baseChunkData['items'][item.replaceAll('*', '')])[0]]['Level'];
-                                    chunkInfo['challenges'][Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1]][Object.keys(baseChunkData['items'][item.replaceAll('*', '')])[0]]['Priority'] = -1;
-                                    tasksToProcess.push({ name: Object.keys(baseChunkData['items'][item.replaceAll('*', '')])[0], skill: Object.values(baseChunkData['items'][item.replaceAll('*', '')])[0].split('-')[1] });
-                                }
-                            });
-                            i++;
-                        }
-                    });
+                    manualTasks[skill][toManuallyAdd[skill]] = craftedBisHighestLevel[skill];
+                    chunkInfo['challenges'][skill][toManuallyAdd[skill]]['Priority'] = -1
                 });
                 didRestart = true;
                 onmessage(e);
@@ -3995,7 +3975,7 @@ let calcChallengesWork = function(chunks, baseChunkData, oldTempItemSkill) {
                         lowestItem = challenge;
                         lowestName = name;
                     }
-                    if (rules['Wield Crafted Items Override'] && !didRestart && chunkInfo['challenges'][skill].hasOwnProperty(name) && chunkInfo['challenges'][skill][name].hasOwnProperty('Output')) {
+                    if (rules['Wield Crafted Items Override'] && !didRestart && chunkInfo['challenges'][skill].hasOwnProperty(name) && chunkInfo['challenges'][skill][name].hasOwnProperty('Output') && chunkInfo['equipment'].hasOwnProperty(chunkInfo['challenges'][skill][name]['Output'])) {
                         valids[skill][name] = chunkInfo['challenges'][skill][name]['Level'];
                         if (!craftedBisOverride[skill]) {
                             craftedBisOverride[skill] = {};
@@ -7712,20 +7692,6 @@ let gatherChunksInfo = function(chunksIn) {
     });
     unlockedSections = combineJSONs(unlockedSections, manualSectionsModified);
     unlockedSections = combineJSONs(unlockedSections, findConnectedSections(chunks, unlockedSections));
-
-    !!chunkInfo['codeItems']['droprateOverrides'] && Object.keys(chunkInfo['codeItems']['droprateOverrides']).forEach((monster) => {
-        Object.keys(chunkInfo['codeItems']['droprateOverrides'][monster]).forEach((drop) => {
-            chunkInfo['codeItems']['droprateOverrides'][monster][drop].forEach((overrideObj) => {
-                let useNewRate = true;
-                !!overrideObj['Chunks'] && overrideObj['Chunks'].forEach((chunk) => {
-                    if (!chunksIn.hasOwnProperty(chunk.split('-')[0]) || !unlockedSections.hasOwnProperty(chunk.split('-')[0]) || !unlockedSections[chunk.split('-')[0]][chunk.split('-')[1]]) {
-                        useNewRate = false;
-                    }
-                });
-                chunkInfo['drops'][monster][drop] = useNewRate ? overrideObj['NewRate'] : overrideObj['OldRate'];
-            });
-        });
-    });
 
     Object.keys(chunksIn).forEach((num) => {
         !!chunkInfo['chunks'][num] && !!chunkInfo['chunks'][num]['Sections'] && Object.keys(chunkInfo['chunks'][num]['Sections']).filter(section => !!unlockedSections[num] && unlockedSections[num][section]).forEach((section) => {
