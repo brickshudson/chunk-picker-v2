@@ -595,7 +595,7 @@ button.menu2 {
 .menu12 {
     position: fixed;
     z-index: 98 !important;
-    bottom: min(28vw, 110px);
+    bottom: min(28vw, 160px);
     right: 10px;
     width: auto;
     height: 2vw;
@@ -2009,9 +2009,19 @@ input#searchPlayerMaps {
     border: solid black 1px;
 }
 
+.rolling-chunk-options-p {
+    padding: 0px 10px;
+    font-size: 16px;
+    color: var(--colorTextAlt);
+}
+
 .theme-header {
     font-size: 20px;
     font-weight: bold;
+    padding: 10px;
+}
+
+.theme-subheader {
     padding: 10px;
 }
 
@@ -3693,6 +3703,11 @@ input#searchPlayerMaps {
     cursor: not-allowed;
 }
 
+.regions .subsetting {
+    display: inline-block;
+    width: 49%;
+}
+
 .extraspace {
     padding-left: 90px !important;
 }
@@ -4416,7 +4431,7 @@ input#searchChunkSections {
 }
 
 #myModal38 > .modal-content {
-    height: 20%;
+    height: 40%;
     width: 25%;
     margin-top: 1.5%;
 }
@@ -5851,19 +5866,19 @@ input#searchChunks {
     font-size: min(10vw, 36px);
     font-weight: bold;
     padding-top: 0px;
-    max-height: 20%;
-    min-height: 20%;
+    max-height: 15%;
+    min-height: 15%;
     line-height: 5.5vh;
     text-align: center;
     background-color: var(--color1);
 }
 
-.clipboard-data, .clipboard-data-2 {
+.clipboard-data, .clipboard-data-2, .clipboard-data-3 {
     margin: 0px 15px;
     font-size: 2vh;
     display: flex;
     align-items: center;
-    height: 40%;
+    height: 20%;
     justify-content: center;
     position: relative;
 }
@@ -5951,9 +5966,23 @@ input#searchChunks {
     background-color: rgb(0, 130, 130);
 }
 
-#plugin-clipboard-button.disabled {
-    background-color: gray;
-    cursor: not-allowed;
+#assign-clipboard-button {
+    background-color: rgb(255, 50, 150);
+    width: 250px;
+    font-size: 2.7vh;
+    color: white;
+    border-width: 1px 1px 1px 1px;
+    border-style: solid;
+    border-color: black;
+    outline: none;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    margin: 10px;
+}
+
+#assign-clipboard-button:hover {
+    background-color: rgb(225, 25, 125);
 }
 
 .clipboard-data-2 i {
@@ -6091,9 +6120,19 @@ input#searchChunks {
     position: relative;
 }
 
+.mobile .skill-text {
+    min-width: 50%;
+    max-width: 50%;
+}
+
 .skill-text.narrow {
     min-width: 50%;
     max-width: 50%;
+}
+
+.mobile .skill-text.narrow {
+    min-width: 30%;
+    max-width: 30%;
 }
 
 .skill-icon-wrapper {
@@ -6189,13 +6228,19 @@ input#searchChunks {
     border-right: solid 1px var(--color8);
 }
 
+.mobile .text-table-header {
+    min-width: 50%;
+    max-width: 50%;
+}
+
 .text-table-header.narrow {
     min-width: 50%;
     max-width: 50%;
 }
 
-.button-table-header.mobile {
-    width: 48.2%;
+.mobile .text-table-header.narrow {
+    min-width: 30%;
+    max-width: 30%;
 }
 
 .button-table-header {
