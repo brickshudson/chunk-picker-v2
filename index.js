@@ -123,7 +123,7 @@ let manualPrimary = {};
 let manualPrimarySkill;
 
 let infoPanelVis = {
-    monsters: false,
+    monsters: true,
     npcs: false,
     spawns: false,
     shops: false,
@@ -1392,7 +1392,7 @@ let topbarElements = {
     'Sandbox Mode': `<div><span class='noscroll' onclick="enableTestMode()"><i class="gosandbox fas fa-flask" title='Sandbox Mode'></i></span></div>`,
 };
 
-let currentVersion = '6.5.7.1';
+let currentVersion = '6.5.8';
 let patchNotesVersion = '6.4.0';
 
 // Patreon Test Server Data
@@ -1552,7 +1552,7 @@ mapImg.addEventListener("load", e => {
         centerCanvas('quick');
     }
 });
-mapImg.src = "osrs_world_map.png?v=6.5.7.1";
+mapImg.src = "osrs_world_map.png?v=6.5.8";
 
 // Rounded rectangle
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -2227,7 +2227,7 @@ document.body.addEventListener('mouseup', function (event) {
 
 // Handles mouse down event
 let handleMouseDown = function(e) {
-    if ((e.button !== 0 && !e.touches) || atHome || inEntry || importMenuOpen || highscoreMenuOpen || helpMenuOpen || patchNotesOpen || manualModalOpen || detailsModalOpen || notesModalOpen || rulesModalOpen || settingsModalOpen || randomModalOpen || userTasksModalOpen || randomListModalOpen || statsErrorModalOpen || searchModalOpen || searchDetailsModalOpen || highestModalOpen || highest2ModalOpen || methodsModalOpen || completeModalOpen || addEquipmentModalOpen || stickerModalOpen || backlogSourcesModalOpen || chunkHistoryModalOpen || challengeAltsModalOpen || manualOuterModalOpen || monsterModalOpen || slayerLockedModalOpen || constructionLockedModalOpen || rollChunkModalOpen || questStepsModalOpen || friendsListModalOpen || friendsAddModalOpen || passiveSkillModalOpen || mapIntroOpen || xpRewardOpen || manualAreasModalOpen || chunkSectionsModalOpen || chunkSectionPickerModalOpen || slayerMasterInfoModalOpen || doableClueStepsModalOpen || clueChunksModalOpen || notesOpen || newTasksOpen || clipboardModalOpen || overlaysModalOpen || userTasksListModalOpen || userTaskDeleteConfirmationModalOpen || exitSandboxWarningModalOpen || mobileMenuOpen || mobileTasksOpen || mobileChunkMenuOpen || customizeTopbarModalOpen) {
+    if ((e.button !== 0 && !e.touches) || atHome || inEntry || importMenuOpen || highscoreMenuOpen || helpMenuOpen || patchNotesOpen || manualModalOpen || detailsModalOpen || notesModalOpen || rulesModalOpen || settingsModalOpen || randomModalOpen || userTasksModalOpen || randomListModalOpen || statsErrorModalOpen || searchModalOpen || searchDetailsModalOpen || highestModalOpen || highest2ModalOpen || methodsModalOpen || completeModalOpen || addEquipmentModalOpen || stickerModalOpen || backlogSourcesModalOpen || chunkHistoryModalOpen || challengeAltsModalOpen || manualOuterModalOpen || monsterModalOpen || slayerLockedModalOpen || constructionLockedModalOpen || rollChunkModalOpen || questStepsModalOpen || friendsListModalOpen || friendsAddModalOpen || passiveSkillModalOpen || mapIntroOpen || xpRewardOpen || manualAreasModalOpen || chunkSectionsModalOpen || chunkSectionPickerModalOpen || slayerMasterInfoModalOpen || doableClueStepsModalOpen || clueChunksModalOpen || notesOpen || newTasksOpen || clipboardModalOpen || overlaysModalOpen || userTasksListModalOpen || userTaskDeleteConfirmationModalOpen || exitSandboxWarningModalOpen || mobileMenuOpen || mobileTasksOpen || mobileChunkMenuOpen || customizeTopbarModalOpen || e.target.nodeName.toLowerCase() === 'select' || e.target.nodeName.toLowerCase() === 'option') {
         drawCanvas();
         return;
     }
@@ -2523,7 +2523,7 @@ let handleMouseUp = function(e) {
             }, 500);
             drawCanvas();
             return;
-        } else if (checkFalseRules() && chunkTasksOn && e.target.id === 'canvas') {
+        } else if (movedNum <= 1 && checkFalseRules() && chunkTasksOn && e.target.id === 'canvas') {
             helpFunc();
             drawCanvas();
             return;
@@ -2941,10 +2941,7 @@ let pickCanvas = function(both, override) {
         }
         $('#chunkInfo2').text('Selected chunks: ' + ((!!tempChunks['selected'] ? Object.keys(tempChunks['selected']).length : 0) + (!!tempChunks['potential'] ? Object.keys(tempChunks['potential']).length : 0)));
         $('#chunkInfo1').text('Unlocked chunks: ' + (!!tempChunks['unlocked'] ? Object.keys(tempChunks['unlocked']).length : 0));
-        isPicking = false;
-        if (isPicking && !settings['randomStartAlways']) {
-            $('.pick').text('Pick for me');
-        } else if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
+        if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
             $('.pick').text('Random Start?');
         } else {
             $('.pick').text('Pick Chunk');
@@ -3006,9 +3003,7 @@ let pickCanvas = function(both, override) {
             tempChunks['unlocked'] = {};
         }
         tempChunks['unlocked'][el[rand]] = el[rand];
-        if (isPicking && !settings['randomStartAlways']) {
-            $('.pick').text('Pick for me');
-        } else if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
+        if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
             $('.pick').text('Random Start?');
         } else {
             $('.pick').text('Pick Chunk');
@@ -3041,7 +3036,6 @@ let pickCanvas = function(both, override) {
             tempChunks['unlocked'] = {};
         }
         tempChunks['unlocked'][el[rand]] = el[rand];
-        recentChunks[el[rand]] = el[rand];
         !!tempChunks['potential'] && Object.keys(tempChunks['potential']).forEach((otherChunkId) => {
             delete tempChunks['potential'][otherChunkId];
             if (!tempChunks['selected']) {
@@ -3052,11 +3046,7 @@ let pickCanvas = function(both, override) {
             delete recentChunks[otherChunkId.toString()];
         });
         delete tempChunks['potential'];
-        scrollToChunkCanvas(el[rand]);
-        isPicking = false;
-        if (isPicking && !settings['randomStartAlways']) {
-            $('.pick').text('Pick for me');
-        } else if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
+        if (((!tempChunks['unlocked'] || Object.keys(tempChunks['unlocked']).length === 0) && (!tempChunks['selected'] || Object.keys(tempChunks['selected']).length === 0)) || settings['randomStartAlways']) {
             $('.pick').text('Random Start?');
         } else {
             $('.pick').text('Pick Chunk');
@@ -3075,7 +3065,7 @@ let pickCanvas = function(both, override) {
             delete tempChunks['selected'][chunkId];
         });
     }
-    (!settings['cinematicRoll'] || mid === roll5Mid) && scrollToChunkCanvas(el[rand]);
+    (!settings['cinematicRoll'] || mid === roll5Mid || isPicking) && scrollToChunkCanvas(el[rand]);
     setRecentRoll(el[rand]);
     chunkJustRolled = true;
     $('#chunkInfo2').text('Selected chunks: ' + ((!!tempChunks['selected'] ? Object.keys(tempChunks['selected']).length : 0) + (!!tempChunks['potential'] ? Object.keys(tempChunks['potential']).length : 0)));
@@ -3088,7 +3078,8 @@ let pickCanvas = function(both, override) {
     !activeSubTabs['quest'] && expandActive('quest');
     !activeSubTabs['diary'] && expandActive('diary');
     !activeSubTabs['extra'] && expandActive('extra');
-    (!settings['cinematicRoll'] || mid === roll5Mid) && calcCurrentChallengesCanvas(true, true, true);
+    (!settings['cinematicRoll'] || mid === roll5Mid || isPicking) && calcCurrentChallengesCanvas(true, true, true);
+    isPicking = false;
     setData();
 }
 
@@ -3253,7 +3244,7 @@ let calcCurrentChallengesCanvas = function(useOld, proceed, fromLoadData, inputT
         setCalculating('.panel-active', useOld);
         setCurrentChallenges(['No tasks currently backlogged.'], ['No tasks currently completed.'], true, true);
         myWorker.terminate();
-        myWorker = new Worker("./worker.js?v=6.5.7.1");
+        myWorker = new Worker("./worker.js?v=6.5.8");
         myWorker.onmessage = workerOnMessage;
         myWorker.postMessage(['current', tempChunks['unlocked'], rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
         workerOut = 1;
@@ -3556,8 +3547,8 @@ $(document).ready(function() {
 // ------------------------------------------------------------
 
 // Recieve message from worker
-let myWorker = new Worker("./worker.js?v=6.5.7.1");
-let myWorker2 = new Worker("./worker.js?v=6.5.7.1");
+let myWorker = new Worker("./worker.js?v=6.5.8");
+let myWorker2 = new Worker("./worker.js?v=6.5.8");
 let workerOnMessage = function(e) {
     if (lastUpdated + 2000000 < Date.now() && !hasUpdate) {
         lastUpdated = Date.now();
@@ -3582,7 +3573,8 @@ let workerOnMessage = function(e) {
         onlyInitialData = true;
     } else if (!Array.isArray(e.data)) {
         if (!!tempChunks['unlocked'] && Object.keys(tempChunks['unlocked']).length >= 100) {
-            $('.panel-active > .calculating > .inner-loading-bar').css('width', e.data);
+            let barVal = parseInt(e.data) > 100 ? '94%' : e.data;
+            $('.panel-active > .calculating > .inner-loading-bar').css('width', barVal);
         }
     } else {
         workerOut--;
@@ -3602,7 +3594,7 @@ let workerOnMessage = function(e) {
                 let challengeStr = calcFutureChallenges2(e.data[1], e.data[2]);
                 expandChallengeStr = challengeStr;
                 $('.panel-challenges').html(challengeStr || 'None');
-                $('#infochallenges .expand').show();
+                $('.expand').show();
             } else if (e.data[0] === 'current') {
                 if (settings['newTasks'] && chunkJustRolled) {
                     openNewTasksModal(calcFutureChallenges2(e.data[1], e.data[2]).replaceAll(", 'future'", ", ''").replaceAll('</span>,', '</span><br />') || 'None');
@@ -5499,16 +5491,23 @@ let toggleInfoPanel = function(pnl) {
     Object.keys(infoPanelVis).forEach((uniqKey) => {
         if (uniqKey === pnl) {
             infoPanelVis[pnl] ? $('.panel-' + pnl).addClass('visible') : $('.panel-' + pnl).removeClass('visible');
-            infoPanelVis[pnl] ? $('#info' + uniqKey + ' > .exp').html('<i class="pic fas fa-minus"></i>') : $('#info' + uniqKey + ' > .exp').html('<i class="pic fas fa-plus"></i>');
             if (pnl === 'challenges' && infoPanelVis[pnl] && expandChallengeStr === '') {
                 $('.panel-challenges').html(`<div class="noscroll calculating"><i class="noscroll fas fa-spinner fa-spin"></i></div>`);
-                $('#infochallenges .expand').hide();
+                $('.expand').hide();
                 expandChallengeStr = '';
                 calcFutureChallenges();
+            } else if (pnl === 'challenges' && infoPanelVis[pnl]) {
+                $('.expand').show();
+            } else {
+                $('.expand').hide();
+            }
+            if (pnl === 'quests' && infoPanelVis[pnl]) {
+                $('.help').show();
+            } else {
+                $('.help').hide();
             }
         } else {
             $('.panel-' + uniqKey).removeClass('visible');
-            $('#info' + uniqKey + ' > .exp').html('<i class="pic fas fa-plus"></i>');
             infoPanelVis[uniqKey] = false;
         }
     });
@@ -5695,32 +5694,14 @@ let updateChunkInfo = function() {
         if ($('.infoid').is(':hidden') && id > 0) {
             $('.infostartup').hide();
             $('.infoid').show();
-            $('#infoname').show();
-            $('#infomonsters').show();
-            $('#infonpcs').show();
-            $('#infospawns').show();
-            $('#infoshops').show();
-            $('#infofeatures').show();
-            $('#infoquests').show();
-            $('#infoclues').show();
-            $('#infoconnections').show();
-            $('#infochallenges').show();
+            $('.chunkinfo-dropdown-container').show();
             if (visible !== '') {
                 $('.panel-' + visible).show();
             }
         } else if (id === -1) {
             $('.infostartup').show();
             $('.infoid').hide();
-            $('#infoname').hide();
-            $('#infomonsters').hide();
-            $('#infonpcs').hide();
-            $('#infospawns').hide();
-            $('#infoshops').hide();
-            $('#infofeatures').hide();
-            $('#infoquests').hide();
-            $('#infoclues').hide();
-            $('#infoconnections').hide();
-            $('#infochallenges').hide();
+            $('.chunkinfo-dropdown-container').hide();
             if (visible !== '') {
                 $('.panel-' + visible).hide();
             }
@@ -5931,7 +5912,7 @@ let updateChunkInfo = function() {
         $('.panel-clues').html(clueStr || 'None');
         $('.panel-connections').html(connectStr || 'None');
         $('.panel-challenges').html(`<div class="noscroll calculating"><div class='noscroll display-button' onclick='calcFutureChallenges()'>Calculate Tasks</div></div>`);
-        $('#infochallenges .expand').hide();
+        $('.expand').hide();
         expandChallengeStr = '';
     }
 }
@@ -6320,12 +6301,12 @@ let calcFutureChallenges = function() {
     });
     if (chunks[infoLockedId]) {
         $('.panel-challenges').html(challengeStr || 'None (chunk is already unlocked)');
-        $('#infochallenges .expand').hide();
+        $('.expand').hide();
         expandChallengeStr = '';
         return;
     }
     $('.panel-challenges').html(`<div class="noscroll calculating"><i class="noscroll fas fa-spinner fa-spin"></i></div>`);
-    $('#infochallenges .expand').hide();
+    $('.expand').hide();
     expandChallengeStr = '';
     chunks[infoLockedId] = true;
     let i = 0;
@@ -6356,7 +6337,7 @@ let calcFutureChallenges = function() {
     }
     tempSections = combineJSONs(tempSections, manualSections);
     myWorker2.terminate();
-    myWorker2 = new Worker("./worker.js?v=6.5.7.1");
+    myWorker2 = new Worker("./worker.js?v=6.5.8");
     myWorker2.onmessage = workerOnMessage;
     myWorker2.postMessage(['future', chunks, rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
     workerOut++;
@@ -7041,26 +7022,59 @@ let openChunkSectionPicker = async function(chunkId, calculateAfter) {
 
 // Redraws the section canvas
 let redrawSectionCanvas = function() {
-    contextSection.globalAlpha = 1;
-    contextSection.drawImage(sectionImgMain, 0, 0);
-    if (hoveredNumSection === '-1') {
-        contextSection.globalAlpha = 0.75;
-    } else {
-        contextSection.globalAlpha = 0.5;
+    let blackPixelArr = [];
+    for (let j = 0; j < 192; j++) {
+        blackPixelArr[j] = [];
+        for (let k = 0; k < 192; k++) {
+            blackPixelArr[j][k] = .9;
+        }
     }
+    contextSection.globalAlpha = 1;
+    contextSection.fillStyle = "rgba(0, 0, 0, 1)";
+    contextSection.fillRect(0, 0, 192, 192);
     !!chunkInfo['sections'][sectionChunkId] && Object.keys(chunkInfo['sections'][sectionChunkId]).forEach((section) => {
         if (selectedSections[section] || (unlockedSections.hasOwnProperty(sectionChunkId) && unlockedSections[sectionChunkId][section] && selectedSections[section] !== false)) {
             contextSection.drawImage(sectionImgs[section], 0, 0);
         }
     });
     if (hoveredNumSection !== '-1') {
-        contextSection.fillStyle = 'rgba(0, 0, 0, 0.4)';
-        contextSection.fillRect(0, 0, 700, 500);
-        contextSection.globalAlpha = 0.75;
+        for (let j = 0; j < 192; j++) {
+            for (let k = 0; k < 192; k++) {
+                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
+                    blackPixelArr[j][k] = .5;
+                }
+            }
+        }
+        contextSection.fillStyle = "rgba(0, 0, 0, 1)";
+        contextSection.fillRect(0, 0, 192, 192);
         let imgSection = new Image();
         imgSection.crossOrigin = 'anonymous';
         imgSection.src = sectionUrls[hoveredNumSection];
         contextSection.drawImage(imgSection, 0, 0);
+        for (let j = 0; j < 192; j++) {
+            for (let k = 0; k < 192; k++) {
+                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
+                    blackPixelArr[j][k] = 0;
+                }
+            }
+        }
+    } else {
+        for (let j = 0; j < 192; j++) {
+            for (let k = 0; k < 192; k++) {
+                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
+                    blackPixelArr[j][k] = 0;
+                }
+            }
+        }
+    }
+    contextSection.globalAlpha = 1;
+    contextSection.drawImage(sectionImgMain, 0, 0);
+    contextSection.fillStyle = "rgba(0, 0, 0, 1)";
+    for (let j = 0; j < 192; j++) {
+        for (let k = 0; k < 192; k++) {
+            contextSection.globalAlpha = blackPixelArr[j][k];
+            contextSection.fillRect(j, k, 1, 1);
+        }
     }
 }
 
@@ -11068,6 +11082,7 @@ let checkMID = function(mid) {
                                         atHome = true;
                                         $('.menu, .menu2, .menu3, .menu4, .menu5, .menu6, .menu7, .menu8, .menu9, .menu10, .menu11, .settings-menu, .topnav, #beta, .hiddenInfo, #entry-menu, #highscore-menu, #highscore-menu2, #import-menu, #help-menu, .canvasDiv, .gomobiletasks, .menu12, .menu13, .menu14').hide();
                                         $('.loading, .ui-loader-header').remove();
+                                        $('html, body').addClass('home');
                                     }
                                 });
                             }
@@ -11091,6 +11106,7 @@ let checkMID = function(mid) {
         onMobile && $('#page1search, .entry-home-about, .entry-home-login-title-container, .entry-home-login-outer-outer, .entry-home-login2-outer, .entry-home-menu-img-container, .entry-home-menu-img2-container').remove();
         !onMobile && $('.entry-home-title, .entry-home-outer-outer').remove();
         setupMap();
+        $('html, body').addClass('home');
     }
 }
 
@@ -11203,9 +11219,11 @@ let preloadHelper = function(snap, childName) {
     let snapDiff;
     let childNameArr = childName.split('/');
     let tempSetSnap = setSnap;
+    let setSnapValid = true;
     childNameArr.forEach((key) => {
         if (!tempSetSnap.hasOwnProperty(key)) {
             tempSetSnap[key] = {};
+            setSnapValid = false;
         }
         snapDiff = diff(snap.val(), tempSetSnap[key]);
         if (typeof snap.val() !== 'object') {
@@ -11213,7 +11231,7 @@ let preloadHelper = function(snap, childName) {
         }
         tempSetSnap = tempSetSnap[key];
     });
-    if ((testMode || snapDiff === null || snapDiff === undefined || Date.now() - recentFancyRollTime < 15000) && !recentlyTestMode) return false;
+    if ((testMode || snapDiff === null || snapDiff === undefined || Date.now() - recentFancyRollTime < 15000) && !recentlyTestMode && setSnapValid) return false;
     tempSetSnap = setSnap;
     let key = childNameArr[0];
     if (!setSnap.hasOwnProperty(key)) {

@@ -8,7 +8,7 @@
     gtag('js', new Date());
     gtag('config', 'G-N76CGCCD4N');
   </script>
-  <link rel="stylesheet" href="./index.css?v=6.5.7.1" />
+  <link rel="stylesheet" href="./index.css?v=6.5.8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
@@ -42,12 +42,12 @@
 <span style="font-family: Roboto Condensed; visibility: hidden">Roboto Condensed</span>
 
 <img class='background-img' draggable='false' src='./Background-chunk.PNG' />
-<img id='mapImg' style="display:none" src='./osrs_world_map.png?v=6.5.7.1' />
+<img id='mapImg' style="display:none" src='./osrs_world_map.png?v=6.5.8' />
 
 <div class='loading'><div class='loading-inner'></div><div class='loading-hint-1'>Chunk Picker V2</div><div class='loading-hint-2'></div></div>
 
 <div class='body' data-role="page" ondragstart="() => {return false;}" ondrop="() => {return false;}">
-  <script src="./index.js?v=6.5.7.1"></script>
+  <script src="./index.js?v=6.5.8"></script>
   <ul class='active-context-menu'>
     <li onclick="switchActiveContext(event, 'backlog')">Backlog</li>
     <li onclick="switchActiveContext(event, 'backlog note')">Backlog Options</li>
@@ -950,35 +950,30 @@
           it!</span><i class="panel-close pic fas fa-times" onclick="hideChunkInfo()"></i></div>
       <div class='infoid'><b><span class='infoid-content'></span></b><i class="panel-close pic fas fa-times"
           onclick="hideChunkInfo()"></i></div>
-      <div id='infomonsters' class='accordion' onclick="toggleInfoPanel('monsters')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Monsters</span></div>
-      <div class="panel panel-monsters"></div>
-      <div id='infonpcs' class='accordion' onclick="toggleInfoPanel('npcs')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">NPCs</span></div>
+      <div class='chunkinfo-dropdown-container'>
+        <div>Show info on:</div>
+        <select id="chunkinfo-dropdown" onchange="toggleInfoPanel(this.value)">
+          <option value='monsters'>Monsters</option>
+          <option value='npcs'>NPCs</option>
+          <option value='spawns'>Item spawns</option>
+          <option value='shops'>Shops</option>
+          <option value='features'>Features</option>
+          <option value='quests'>Quest progression</option>
+          <option value='clues'>Clue steps</option>
+          <option value='connections'>Connected areas</option>
+          <option value='challenges'>Potential chunk tasks</option>
+        </select>
+        <span class='help'>?<span class="tooltiptext">Quests in <b>bold</b> indicate the quest is started in this chunk.</span></span>
+        <span class='expand' title='Expand' onclick='expandFutureChallenges(event)'><i class="fas fa-expand-alt"></i></span>
+      </div>
+      <div class="panel panel-monsters visible"></div>
       <div class="panel panel-npcs"></div>
-      <div id='infospawns' class='accordion' onclick="toggleInfoPanel('spawns')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Item spawns</span></div>
       <div class="panel panel-spawns"></div>
-      <div id='infoshops' class='accordion' onclick="toggleInfoPanel('shops')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Shops</span></div>
       <div class="panel panel-shops"></div>
-      <div id='infofeatures' class='accordion' onclick="toggleInfoPanel('features')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Features</span></div>
       <div class="panel panel-features"></div>
-      <div id='infoquests' class='accordion' onclick="toggleInfoPanel('quests')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Quest progression <span
-            class='help'>?<span class="tooltiptext">Quests in <b>bold</b> indicate the quest is started in this
-              chunk.</span></span></span></div>
       <div class="panel panel-quests"></div>
-      <div id='infoclues' class='accordion' onclick="toggleInfoPanel('clues')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Clue steps</span></div>
       <div class="panel panel-clues"></div>
-      <div id='infoconnections' class='accordion' onclick="toggleInfoPanel('connections')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Connected areas</span></div>
       <div class="panel panel-connections"></div>
-      <div id='infochallenges' class='accordion' onclick="toggleInfoPanel('challenges')"><span class='exp'><i
-            class="acc pic fas fa-plus"></i></span><span class="accordion-title">Potential chunk
-          tasks <span class='expand' title='Expand' onclick='expandFutureChallenges(event)'><i class="fas fa-expand-alt"></i></span></div>
       <div class="panel panel-challenges"></div>
       <div class='infocontribute'><i>Information wrong or missing? Submit feedback <a
             href='https://docs.google.com/forms/d/e/1FAIpQLSdmSyeMPMjuDxPrDKQHbCjJe0bXQOUwPYvyTeY_mrF-UrtmCQ/viewform?usp=sf_link'

@@ -40,14 +40,14 @@ body::-webkit-scrollbar {
     -webkit-tap-highlight-color:rgba(0,0,0,0);
 }
 
-body:not(.about):not(.patch):not(.change-password):not(.maps) {
+body:not(.about):not(.patch):not(.change-password):not(.maps):not(.home) {
     background-color: black;
     color: var(--colorText);
     overflow: hidden !important;
 }
 
 @-moz-document url-prefix() {
-    html:not(.about):not(.patch):not(.change-password):not(.maps),body:not(.about):not(.patch):not(.change-password):not(.maps){overflow: hidden !important;}
+    html:not(.about):not(.patch):not(.change-password):not(.maps):not(.home),body:not(.about):not(.patch):not(.change-password):not(.maps):not(.home){overflow: hidden !important;}
 }
 
 a, a:visited {
@@ -505,8 +505,19 @@ button.menu2 {
     margin-right: 15px;
 }
 
-.infoid, #infomonsters, #infonpcs, #infospawns, #infoshops, #infofeatures, #infoquests, #infoclues, #infoconnections, #infochallenges {
+.infoid, .chunkinfo-dropdown-container {
     display: none;
+}
+
+.chunkinfo-dropdown-container {
+    position: relative;
+    font-size: min(2vw, 24px);
+    border-top: solid 1px;
+}
+
+#chunkinfo-dropdown {
+    font-size: min(1.5vw, 18px);
+    margin: 5px;
 }
 
 .infoid {
@@ -2413,7 +2424,11 @@ input#searchPlayerMaps {
 }
 
 .menu8 .panel.visible {
-    max-height: min(10vh, 200px);
+    max-height: min(20vh, 400px);
+    margin: 5px;
+    background-color: var(--color3);
+    padding: 10px !important;
+    border-radius: 5px;
 }
 
 .panel-active .challenge {
@@ -2634,10 +2649,11 @@ input#searchPlayerMaps {
 }
 
 .help {
-    position: relative;
-    float: right;
-    margin-right: 10px;
+    position: absolute;
+    right: 0;
+    margin-right: 15px;
     color: var(--colorTextAlt);
+    display: none;
 }
 
 .help2 {
@@ -2775,12 +2791,13 @@ input#searchPlayerMaps {
 }
 
 .expand {
-    position: relative;
-    float: right;
-    margin-right: 10px;
+    position: absolute;
+    right: 0;
+    margin-right: 15px;
     color: var(--colorTextAlt);
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
+    cursor: pointer;
 }
 
 .expand:hover {

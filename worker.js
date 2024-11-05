@@ -1011,7 +1011,7 @@ let calcChallenges = function(chunks, baseChunkData) {
 
     do {
         i++;
-        type === 'current' && postMessage(((i + 1) * 6) + '%');
+        type === 'current' && postMessage(((Math.max(i, .1)) * 5.5) + '%');
         !!tempItemSkill && Object.keys(tempItemSkill).forEach((skill) => {
             let skillMax = Math.max(...Object.values(newValids[skill]));
             !!tempItemSkill[skill] && Object.keys(tempItemSkill[skill]).forEach((item) => {
@@ -1333,7 +1333,7 @@ let calcChallenges = function(chunks, baseChunkData) {
                 });
             });
             leftoversCount++;
-            type === 'current' && postMessage(((i + 1 + (.2 * Math.min(leftoversCount, 5))) * 6) + '%');
+            type === 'current' && postMessage(((Math.max(i, .1) + (.16 * Math.min(leftoversCount, 5))) * 5.5) + '%');
         }
         Object.keys(newValids).filter((skill) => { return skill !== 'BiS' }).forEach((skill) => {
             let skillIsPrimary = checkPrimaryMethod(skill, newValids, baseChunkData);
