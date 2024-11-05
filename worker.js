@@ -1282,7 +1282,15 @@ let calcChallenges = function(chunks, baseChunkData) {
                                 }
                             }
                         }
-                        !!chunkInfo['challenges'][skill][challenge]['Requirements'] && chunkInfo['challenges'][skill][challenge]['Requirements'].filter((req) => { return !checkPrimaryMethod(req, newValids, baseChunkData) && !chunkInfo['challenges'][skill][challenge]['ManualValid'] }).some(req => {
+                        !!chunkInfo['challenges'][skill][challenge]['Requirements'] && Object.keys(chunkInfo['challenges'][skill][challenge]['Requirements']).filter((req) => {
+                            let highestLevel = 0;
+                            !!newValids && newValids.hasOwnProperty(req) && Object.keys(newValids[req]).forEach((task) => {
+                                if (!!chunkInfo['challenges'][req] && !!chunkInfo['challenges'][req][task] && !!chunkInfo['challenges'][req][task]['Level'] && chunkInfo['challenges'][req][task]['Level'] > highestLevel) {
+                                    highestLevel = chunkInfo['challenges'][req][task]['Level'];
+                                }
+                            });
+                            return !checkPrimaryMethod(req, newValids, baseChunkData) && !chunkInfo['challenges'][skill][challenge]['ManualValid'] && (!passiveSkill || !passiveSkill.hasOwnProperty(req) || passiveSkill[req] <= 1 || passiveSkill[req] < chunkInfo['challenges'][req][chunkInfo['challenges'][skill][challenge]['Requirements'][req]]) && (highestLevel <= 1 || highestLevel < chunkInfo['challenges'][req][chunkInfo['challenges'][skill][challenge]['Requirements'][req]]);
+                        }).some(req => {
                             if (!nonValids.hasOwnProperty(challenge)) {
                                 nonValids[challenge] = [];
                             }
@@ -1476,7 +1484,15 @@ let calcChallenges = function(chunks, baseChunkData) {
                         }
                     }
                 }
-                !!chunkInfo['challenges'][skill][challenge]['Requirements'] && chunkInfo['challenges'][skill][challenge]['Requirements'].filter((req) => { return !checkPrimaryMethod(req, newValids, baseChunkData) && !chunkInfo['challenges'][skill][challenge]['ManualValid'] }).some(req => {
+                !!chunkInfo['challenges'][skill][challenge]['Requirements'] && Object.keys(chunkInfo['challenges'][skill][challenge]['Requirements']).filter((req) => {
+                    let highestLevel = 0;
+                    !!newValids && newValids.hasOwnProperty(req) && Object.keys(newValids[req]).forEach((task) => {
+                        if (!!chunkInfo['challenges'][req] && !!chunkInfo['challenges'][req][task] && !!chunkInfo['challenges'][req][task]['Level'] && chunkInfo['challenges'][req][task]['Level'] > highestLevel) {
+                            highestLevel = chunkInfo['challenges'][req][task]['Level'];
+                        }
+                    });
+                    return !checkPrimaryMethod(req, newValids, baseChunkData) && !chunkInfo['challenges'][skill][challenge]['ManualValid'] && (!passiveSkill || !passiveSkill.hasOwnProperty(req) || passiveSkill[req] <= 1 || passiveSkill[req] < chunkInfo['challenges'][req][chunkInfo['challenges'][skill][challenge]['Requirements'][req]]) && (highestLevel <= 1 || highestLevel < chunkInfo['challenges'][req][chunkInfo['challenges'][skill][challenge]['Requirements'][req]]);
+                }).some(req => {
                     if (!nonValids.hasOwnProperty(challenge)) {
                         nonValids[challenge] = [];
                     }
