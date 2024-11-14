@@ -38,6 +38,7 @@ body::-webkit-scrollbar {
     -ms-user-select:none;
     user-select:none;
     -webkit-tap-highlight-color:rgba(0,0,0,0);
+    scrollbar-width: thin;
 }
 
 body:not(.about):not(.patch):not(.change-password):not(.maps):not(.home) {
@@ -496,8 +497,12 @@ button.menu2 {
     z-index: 99 !important;
     top: max(25vh, 225px);
     left: 10px;
-    width: min(30vw, 400px);
+    width: min(32vw, 400px);
     height: 2vw;
+}
+
+.menu8 .infocontent {
+    height: 350px;
 }
 
 .infostartup {
@@ -515,9 +520,17 @@ button.menu2 {
     border-top: solid 1px;
 }
 
+.mobile .chunkinfo-dropdown-container {
+    font-size: min(7vw, 24px);
+}
+
 #chunkinfo-dropdown {
     font-size: min(1.5vw, 18px);
     margin: 5px;
+}
+
+.mobile #chunkinfo-dropdown {
+    font-size: min(5vw, 18px);
 }
 
 .infoid {
@@ -526,15 +539,66 @@ button.menu2 {
     -webkit-transition: background-color 1000ms ease-in-out;
     -ms-transition: background-color 1000ms ease-in-out;
     transition: background-color 1000ms ease-in-out;
+    border-bottom: solid 1px;
 }
 
 .infoid.new {
     background-color:  var(--colorFlash);
 }
 
+#chunkinfo-sidebar-container {
+    float: left;
+    height: 85%;
+    overflow: auto;
+    width: 38%;
+    margin-right: 5px;
+    border-right: solid;
+    font-weight: bold;
+    font-size: min(1.33vw, 18px);
+    background-color: var(--color1);
+    border-right-width: 1px;
+}
+
+#chunkinfo-sidebar-container > div {
+    padding: 5px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+#chunkinfo-sidebar-container > div:hover {
+    background-color: var(--color3);
+}
+
+#chunkinfo-sidebar-container > div.active {
+    background-color: var(--color4);
+}
+
+.chunkinfo-divider {
+    height: 27px;
+    background-color: var(--color2);
+    border-bottom: solid 1px;
+    font-size: 20px;
+}
+
+.sidebar-hide {
+    color: var(--colorTextAlt);
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    float: left;
+    margin-top: 2px;
+}
+
+.sidebar-hide:hover {
+    color: var(--colorLink);
+}
+
 .infocontribute {
     border-top: solid 1px;
     font-size: min(1.25vw, 15px);
+    float: left;
+    width: 100%;
 }
 
 .menu9 {
@@ -2424,11 +2488,11 @@ input#searchPlayerMaps {
 }
 
 .menu8 .panel.visible {
-    max-height: min(20vh, 400px);
     margin: 5px;
     background-color: var(--color3);
     padding: 10px !important;
     border-radius: 5px;
+    max-height: 239px;
 }
 
 .panel-active .challenge {
@@ -2798,6 +2862,7 @@ input#searchPlayerMaps {
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
     cursor: pointer;
+    margin-top: 2px;
 }
 
 .expand:hover {
@@ -3718,6 +3783,11 @@ input#searchPlayerMaps {
 
 .setting > input:disabled {
     cursor: not-allowed;
+}
+
+.chunkinfo-default-rule {
+    margin: 10px 20px;
+    font-size: 18px;
 }
 
 .regions .subsetting {
@@ -7752,6 +7822,7 @@ input#searchMonsters {
     text-align: center;
     font-size: 24px;
     color: var(--colorLink);
+    position: relative;
 }
 
 .menu9.sidebar {
