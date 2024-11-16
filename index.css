@@ -1303,6 +1303,26 @@ button.menu2 {
     background-color: var(--color1);
 }
 
+.content11 {
+    border: solid;
+    width: 60%;
+    max-height: 100%;
+    margin: auto;
+    text-align: center;
+    margin-top: 2vh;
+    box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 150);
+    background-color: var(--color6);
+    font-size: 24px;
+    overflow-y: auto;
+    margin-bottom: 100px;
+    padding-bottom: 20px;
+}
+
+.a404-sub-body {
+    text-align: left;
+    padding: 0px 20px;
+}
+
 .mobile #page8 {
     width: unset;
     margin-top: 0px;
@@ -6070,6 +6090,11 @@ input#searchChunks {
 
 #assign-clipboard-button:hover {
     background-color: rgb(225, 25, 125);
+}
+
+#plugin-clipboard-button:disabled, #assign-clipboard-button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
 }
 
 .clipboard-data-2 i {
