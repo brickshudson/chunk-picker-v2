@@ -3122,11 +3122,11 @@ let calcChallengesWork = function(chunks, baseChunkData, oldTempItemSkill) {
 
     let tempSkills;
     if (rules['F2P'] && rules['Skiller']) {
-        tempSkills = [...f2pSkills.filter(x => !combatSkills.includes(x) && x !== 'Combat' && x !== 'Slayer'), 'Nonskill', 'Quest', 'Extra'];
+        tempSkills = [...f2pSkills.filter(x => !combatSkills.includes(x) && x !== 'Combat' && x !== 'Slayer'), 'Nonskill', 'Quest', 'Diary', 'Extra'];
     } else if (rules['F2P']) {
-        tempSkills = [...f2pSkills, 'Nonskill', 'Quest', 'Extra'];
+        tempSkills = [...f2pSkills, 'Nonskill', 'Quest', 'Diary', 'Extra'];
     } else if (rules['Skiller']) {
-        tempSkills = [...skillNames.filter(x => !combatSkills.includes(x) && x !== 'Combat' && x !== 'Slayer'), 'Nonskill', 'Quest', 'Extra'];
+        tempSkills = [...skillNames.filter(x => !combatSkills.includes(x) && x !== 'Combat' && x !== 'Slayer'), 'Nonskill', 'Quest', 'Diary', 'Extra'];
     } else {
         tempSkills = [...skillNames, 'Nonskill', 'Quest', 'Diary', 'Extra'];
     }
