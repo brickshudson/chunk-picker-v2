@@ -501,36 +501,13 @@ button.menu2 {
     height: 2vw;
 }
 
-.menu8 .infocontent {
-    height: 350px;
-}
-
 .infostartup {
     font-size: min(1.5vw, 22px);
     margin-right: 15px;
 }
 
-.infoid, .chunkinfo-dropdown-container {
+.infoid, #chunkinfo-sidebar-container, .chunkinfo-divider, #chunkinfo-main-container {
     display: none;
-}
-
-.chunkinfo-dropdown-container {
-    position: relative;
-    font-size: min(2vw, 24px);
-    border-top: solid 1px;
-}
-
-.mobile .chunkinfo-dropdown-container {
-    font-size: min(7vw, 24px);
-}
-
-#chunkinfo-dropdown {
-    font-size: min(1.5vw, 18px);
-    margin: 5px;
-}
-
-.mobile #chunkinfo-dropdown {
-    font-size: min(5vw, 18px);
 }
 
 .infoid {
@@ -597,7 +574,6 @@ button.menu2 {
 .infocontribute {
     border-top: solid 1px;
     font-size: min(1.25vw, 15px);
-    float: left;
     width: 100%;
 }
 
