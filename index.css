@@ -2743,6 +2743,25 @@ input#searchPlayerMaps {
     visibility: visible;
 }
 
+.help2 .tooltiptext {
+    visibility: hidden;
+    width: 220px;
+    background-color: var(--color2);
+    color: var(--colorText);
+    text-align: center;
+    border: 1px var(--colorText) solid;
+    padding: 5px 0;
+    font-size: 14px;
+    position: absolute;
+    z-index: 1;
+    top: 5px;
+    left: 150%;
+}
+
+.help2:hover .tooltiptext {
+    visibility: visible;
+}
+
 #myModal43.mobile .section-help {
     display: none;
 }
