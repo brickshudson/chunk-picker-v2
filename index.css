@@ -8505,6 +8505,7 @@ input#searchMonsters {
     top: 52px;
     height: 100%;
     background-color: var(--color2);
+    z-index: 999 !important;
 }
 
 .menu8.mobile .panel-close {

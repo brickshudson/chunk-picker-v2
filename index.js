@@ -425,7 +425,6 @@ let rules = {
     "Skiller": false,
     "Fill Stash": false,
     "Fill POH": false,
-    "Herblore Unlocked Exception": false,
     "All Shops": false,
     "Quest Skill Reqs": false,
     "Cleaning Herbs": false,
@@ -524,7 +523,6 @@ let ruleNames = {
     "Skiller": "Restrict tasks to only those doable on a level 3 skiller",
     "Fill Stash": "Must build and fill S.T.A.S.H. units as soon as you're able to",
     "Fill POH": "Must fill slots in the POH costume room",
-    "Herblore Unlocked Exception": "Unlock Herblore immediately without Druidic Ritual (for accounts that make exceptions and complete the quest outside their chunks)",
     "All Shops": "Must buy every item from every shop within your chunks once <span class='rule-asterisk noscroll'>⁺</span>",
     "Quest Skill Reqs": "Must get Quest skill requirements, regardless of if the Quest is startable or not <span class='rule-asterisk noscroll'>⁺</span>",
     "Cleaning Herbs": "Cleaning grimy herbs/making (unf) potions can count as chunk tasks",
@@ -745,7 +743,6 @@ let ruleStructure = {
     "Herblore": {
         "Herblore Unlocked Snake Weed": true,
         "Herblore Unlocked": true,
-        "Herblore Unlocked Exception": true,
         "Cleaning Herbs": true
     },
     "Hunter": {
@@ -1399,7 +1396,7 @@ let topbarElements = {
     'Sandbox Mode': `<div><span class='noscroll' onclick="enableTestMode()"><i class="gosandbox fas fa-flask" title='Sandbox Mode'></i></span></div>`,
 };
 
-let currentVersion = '6.5.20';
+let currentVersion = '6.5.21';
 let patchNotesVersion = '6.4.0';
 
 // Patreon Test Server Data
@@ -1559,7 +1556,7 @@ mapImg.addEventListener("load", e => {
         centerCanvas('quick');
     }
 });
-mapImg.src = "osrs_world_map.png?v=6.5.20";
+mapImg.src = "osrs_world_map.png?v=6.5.21";
 
 // Rounded rectangle
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -3061,7 +3058,7 @@ let pickCanvas = function(both, override) {
             delete tempChunks['selected'][chunkId];
         });
     }
-    (!settings['cinematicRoll'] || mid === roll5Mid || isPicking) && scrollToChunkCanvas(el[rand]);
+    (!settings['cinematicRoll'] || onMobile || mid === roll5Mid || isPicking) && scrollToChunkCanvas(el[rand]);
     setRecentRoll(el[rand]);
     chunkJustRolled = true;
     $('#chunkInfo2').text('Selected chunks: ' + ((!!tempChunks['selected'] ? Object.keys(tempChunks['selected']).length : 0) + (!!tempChunks['potential'] ? Object.keys(tempChunks['potential']).length : 0)));
@@ -3074,7 +3071,7 @@ let pickCanvas = function(both, override) {
     !activeSubTabs['quest'] && expandActive('quest');
     !activeSubTabs['diary'] && expandActive('diary');
     !activeSubTabs['extra'] && expandActive('extra');
-    (!settings['cinematicRoll'] || mid === roll5Mid || isPicking) && calcCurrentChallengesCanvas(true, true, true);
+    (!settings['cinematicRoll'] || onMobile || mid === roll5Mid || isPicking) && calcCurrentChallengesCanvas(true, true, true);
     isPicking = false;
     setData();
 }
@@ -3240,7 +3237,7 @@ let calcCurrentChallengesCanvas = function(useOld, proceed, fromLoadData, inputT
         setCalculating('.panel-active', useOld);
         setCurrentChallenges(['No tasks currently backlogged.'], ['No tasks currently completed.'], true, true);
         myWorker.terminate();
-        myWorker = new Worker("./worker.js?v=6.5.20");
+        myWorker = new Worker("./worker.js?v=6.5.21");
         myWorker.onmessage = workerOnMessage;
         myWorker.postMessage(['current', tempChunks['unlocked'], rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
         workerOut = 1;
@@ -3543,8 +3540,8 @@ $(document).ready(function() {
 // ------------------------------------------------------------
 
 // Recieve message from worker
-let myWorker = new Worker("./worker.js?v=6.5.20");
-let myWorker2 = new Worker("./worker.js?v=6.5.20");
+let myWorker = new Worker("./worker.js?v=6.5.21");
+let myWorker2 = new Worker("./worker.js?v=6.5.21");
 let workerOnMessage = function(e) {
     if (lastUpdated + 2000000 < Date.now() && !hasUpdate) {
         lastUpdated = Date.now();
@@ -6344,7 +6341,7 @@ let calcFutureChallenges = function() {
     }
     tempSections = combineJSONs(tempSections, manualSections);
     myWorker2.terminate();
-    myWorker2 = new Worker("./worker.js?v=6.5.20");
+    myWorker2 = new Worker("./worker.js?v=6.5.21");
     myWorker2.onmessage = workerOnMessage;
     myWorker2.postMessage(['future', chunks, rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
     workerOut++;
