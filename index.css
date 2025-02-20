@@ -4243,6 +4243,21 @@ input#searchChunkSections {
     text-align: center;
 }
 
+.chunk-section-canvas-spinner {
+    font-size: 70px;
+    display: flex;
+    position: absolute;
+    margin: 61px;
+}
+
+.chunk-section-picker-block-outer {
+    display: flex;
+}
+
+.chunk-section-picker-block {
+    width: 50%;
+}
+
 .chunk-section-picker-data > .results {
     display: flex;
     justify-content: center;
@@ -4254,6 +4269,7 @@ input#searchChunkSections {
 .chunk-section-picker-chunk-id {
     font-weight: bold;
     font-size: 36px;
+    margin-bottom: 10px;
 }
   
 .chunk-section-picker-container {
@@ -4264,64 +4280,70 @@ input#searchChunkSections {
 }
 
 .chunk-section-picker-btns {
-    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     text-align: center;
+    margin-top: -2px;
 }
 
 .section-btn {
+    padding: 2px 4px;
+}
+
+.section-btn-inner {
     font-weight: normal;
     border: solid 1px var(--colorText);
-    margin: 5px;
     padding: 2px;
-    cursor: pointer;
     font-size: min(4vw, 24px);
-    -webkit-transition-duration: 0.4s;
-    transition-duration: 0.4s;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
 }
 
-.section-btn:not(.locked):hover {
+.section-btn select {
+    font-size: min(2vw, 16px);
+    height: 27px;
+    margin: 1px;
+    vertical-align: text-top;
+    color: black;
+}
+
+.section-btn:not(.locked):hover .section-btn-inner {
     background-color: var(--color3);
 }
 
-.section-btn.locked {
-    cursor: not-allowed;
-}
-
-.green-section-btn {
+.green-section-btn .section-btn-inner {
     background-color: rgb(30, 100, 30);
 }
 
-.green-section-btn:not(.locked):hover {
+.green-section-btn:not(.locked):hover .section-btn-inner {
     background-color: rgb(15, 150, 15);
 }
 
-.green-section-btn.selected-area {
+.green-section-btn.selected-area .section-btn-inner {
     background-color: rgb(15, 150, 15);
 }
 
-.green-section-btn.selected-area:hover {
+.green-section-btn.selected-area:hover .section-btn-inner {
     background-color: rgb(30, 100, 30);
 }
 
-.red-section-btn {
+.red-section-btn .section-btn-inner {
     background-color: rgb(100, 30, 30);
 }
 
-.red-section-btn:not(.locked):hover {
+.red-section-btn:not(.locked):hover .section-btn-inner {
     background-color: rgb(150, 15, 15);
 }
 
-.red-section-btn.selected-area {
+.red-section-btn.selected-area .section-btn-inner {
     background-color: rgb(150, 15, 15);
 }
 
-.red-section-btn.selected-area:hover {
+.red-section-btn.selected-area:hover .section-btn-inner {
     background-color: rgb(100, 30, 30);
 }
 

@@ -2840,7 +2840,7 @@ let calcChallenges = function(chunks, baseChunkData) {
         });
         Object.keys(newValids).forEach((skill) => {
             Object.keys(newValids[skill]).filter(challenge => { return (chunkInfo['challenges'][skill].hasOwnProperty(challenge) && chunkInfo['challenges'][skill][challenge].hasOwnProperty('Reward')) && checkPrimaryMethod(skill, newValids, baseChunkData) && ((!backlog[skill] || (!backlog[skill].hasOwnProperty(challenge) && !backlog[skill].hasOwnProperty(challenge.replaceAll('#', '/'))))) && !!chunkInfo['challenges'][skill][challenge]['Reward'] }).forEach((challenge) => {
-                chunkInfo['challenges'][skill][challenge]['Reward'].forEach((reward) => {
+                chunkInfo['challenges'][skill][challenge]['Reward'].filter((reward) => (!backloggedSources['items'] || !backloggedSources['items'][reward])).forEach((reward) => {
                     if (!baseChunkData['items'][reward]) {
                         baseChunkData['items'][reward] = {};
                     }

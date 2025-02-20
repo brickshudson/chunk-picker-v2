@@ -1376,6 +1376,9 @@ let sectionImgs = [];
 let canvasSection;
 let contextSection;
 let chunkSectionCalculateAfter = false;
+let globalBlackPixelArr = {};
+let globalHighlightPixelArr = {};
+let doneInitDraw = false;
 let signInAttempts = 0;
 let expandChallengeStr = '';
 let detailsStack = [];
@@ -1396,7 +1399,7 @@ let topbarElements = {
     'Sandbox Mode': `<div><span class='noscroll' onclick="enableTestMode()"><i class="gosandbox fas fa-flask" title='Sandbox Mode'></i></span></div>`,
 };
 
-let currentVersion = '6.5.26';
+let currentVersion = '6.6.0';
 let patchNotesVersion = '6.4.0';
 
 // Patreon Test Server Data
@@ -1556,7 +1559,7 @@ mapImg.addEventListener("load", e => {
         centerCanvas('quick');
     }
 });
-mapImg.src = "osrs_world_map.png?v=6.5.26";
+mapImg.src = "osrs_world_map.png?v=6.6.0";
 
 // Rounded rectangle
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -3238,7 +3241,7 @@ let calcCurrentChallengesCanvas = function(useOld, proceed, fromLoadData, inputT
         setCalculating('.panel-active', useOld);
         setCurrentChallenges(['No tasks currently backlogged.'], ['No tasks currently completed.'], true, true);
         myWorker.terminate();
-        myWorker = new Worker("./worker.js?v=6.5.26");
+        myWorker = new Worker("./worker.js?v=6.6.0");
         myWorker.onmessage = workerOnMessage;
         myWorker.postMessage(['current', tempChunks['unlocked'], rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
         workerOut = 1;
@@ -3541,8 +3544,8 @@ $(document).ready(function() {
 // ------------------------------------------------------------
 
 // Recieve message from worker
-let myWorker = new Worker("./worker.js?v=6.5.26");
-let myWorker2 = new Worker("./worker.js?v=6.5.26");
+let myWorker = new Worker("./worker.js?v=6.6.0");
+let myWorker2 = new Worker("./worker.js?v=6.6.0");
 let workerOnMessage = function(e) {
     if (lastUpdated + 2000000 < Date.now() && !hasUpdate) {
         lastUpdated = Date.now();
@@ -6370,7 +6373,7 @@ let calcFutureChallenges = function() {
     }
     tempSections = combineJSONs(tempSections, manualSections);
     myWorker2.terminate();
-    myWorker2 = new Worker("./worker.js?v=6.5.26");
+    myWorker2 = new Worker("./worker.js?v=6.6.0");
     myWorker2.onmessage = workerOnMessage;
     myWorker2.postMessage(['future', chunks, rules, chunkInfo, skillNames, processingSkill, maybePrimary, combatSkills, monstersPlus, objectsPlus, chunksPlus, itemsPlus, mixPlus, npcsPlus, tasksPlus, tools, elementalRunes, manualTasks, completedChallenges, backlog, "1/" + rules['Rare Drop Amount'], universalPrimary, elementalStaves, rangedItems, boneItems, highestCurrent, dropTables, possibleAreas, randomLoot, magicTools, bossLogs, bossMonsters, minigameShops, manualEquipment, checkedChallenges, backloggedSources, altChallenges, manualMonsters, slayerLocked, passiveSkill, f2pSkills, assignedXpRewards, mid === diary2Tier, manualAreas, "1/" + rules['Secondary Primary Amount'], constructionLocked, mid === manualAreasOnly, tempSections, settings['optOutSections'], maxSkill, userTasks, manualPrimary]);
     workerOut++;
@@ -6970,7 +6973,7 @@ let searchChunkSections = function() {
     preloadImages(chunkImageUrls);
     !!tempChunks['unlocked'] && Object.keys(tempChunks['unlocked']).filter(chunkId => chunkInfo['sections'].hasOwnProperty(chunkId) && Object.keys(chunkInfo['sections'][chunkId]).filter(section => section !== "0").length > 0 && (chunkId.toLowerCase().includes(searchTemp.toLowerCase()) || (chunkInfo['chunks'][chunkId].hasOwnProperty('Nickname') && chunkInfo['chunks'][chunkId]['Nickname'].toLowerCase().includes(searchTemp.toLowerCase())))).sort((a, b) => parseInt(a) - parseInt(b)).forEach((chunkId) => {
         let coords = convertToXY(chunkId);
-        $('#chunk-sections-data').append(`<div class='outer-chunk-section noscroll' onclick='openChunkSectionPicker("${chunkId}")' title='${chunkInfo['chunks'][chunkId]['Nickname']}'><img src='${'./resources/chunk_images/row-' + (coords.y + 1) + '-column-' + (coords.x + 1) + '.png'}' /><span class='chunk-section-text noscroll'>${chunkId}</span></div>`);
+        $('#chunk-sections-data').append(`<div class='outer-chunk-section noscroll' onclick='openChunkSectionPicker("${chunkId}")' title="${chunkInfo['chunks'][chunkId]['Nickname']}"><img src='${'./resources/chunk_images/row-' + (coords.y + 1) + '-column-' + (coords.x + 1) + '.png'}' /><span class='chunk-section-text noscroll'>${chunkId}</span></div>`);
     });
     if ($('#chunk-sections-data').children().length === 0) {
         $('#chunk-sections-data').append(`<div class="noscroll results"><span class="noscroll holder"><span class="noscroll topline">No results found (0)</span></span></div>`);
@@ -7011,6 +7014,7 @@ let resetSectionVars = async function(chunkId) {
     hoveredNumSection = '-1';
     sectionImgs = [];
     selectedSections = {};
+    doneInitDraw = false;
     !!chunkInfo['sections'][chunkId] && Object.keys(chunkInfo['sections'][chunkId]).forEach((section) => {
         let imgSection = new Image();
         imgSection.crossOrigin = 'anonymous';
@@ -7025,8 +7029,20 @@ let resetSectionVars = async function(chunkId) {
     sectionImgMain.src = sectionMainUrl;
     canvasSection = document.getElementById('chunk-section-picker-canvas');
     contextSection = canvasSection.getContext('2d');
-    sectionImgMain.onload = function() {
-        redrawSectionCanvas();
+    $('.chunk-section-canvas-spinner').show();
+    contextSection.clearRect(0, 0, canvasSection.width, canvasSection.height);
+    sectionImgMain.onload = async function() {
+        document.body.offsetHeight;
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+                redrawSectionCanvas();
+            });
+        } else {
+            setTimeout(() => {
+                redrawSectionCanvas();
+            }, 0);
+        }
     }
 }
 
@@ -7036,33 +7052,39 @@ let openChunkSectionPicker = async function(chunkId, calculateAfter) {
         await resetSectionVars(chunkId);
         chunkSectionPickerModalOpen = true;
         chunkSectionCalculateAfter = calculateAfter;
-        $(`.chunk-section-picker-chunk-id`).text(chunkId);
+        $(`.chunk-section-picker-chunk-id`).text(`Chunk ${chunkId}`);
         $('#chunk-section-picker-selectall-btn').prop("checked", false).prop('disabled', !(testMode || !(viewOnly || inEntry || locked)));
         $('#save-chunk-section-picker-button').text(!(testMode || !(viewOnly || inEntry || locked)) ? 'Close' : 'Save');
         $(`.chunk-section-picker-btns`).empty();
         !!chunkInfo['sections'][chunkId] && Object.keys(chunkInfo['sections'][chunkId]).forEach((sec) => {
-            if (!(testMode || !(viewOnly || inEntry || locked))) {
-                $(`.chunk-section-picker-btns`).append(`<span id='section-btn-${sec}' class='section-btn locked'>Section ${sec}</span>`);
-            } else {
-                $(`.chunk-section-picker-btns`).append(`<span id='section-btn-${sec}' class='section-btn' onmouseover="hoverSectionCanvas('${sec}')" onmouseout="hoverSectionCanvas('-1')" onclick="selectSectionCanvas('${sec}')">Section ${sec}</span>`);
-            }
+            $(`.chunk-section-picker-btns`).append(`<div id='section-btn-${sec}' class='section-btn${!(testMode || !(viewOnly || inEntry || locked)) ? ' locked' : ''}' onmouseover="hoverSectionCanvas('${sec}')" onmouseout="hoverSectionCanvas('-1')">
+                <div class='section-btn-inner'><span>Section ${sec}: </span>
+                <span><select id="section-dropdown-${sec}" ${!(testMode || !(viewOnly || inEntry || locked)) ? ' disabled' : ''} onchange="selectSectionCanvas('${sec}')">
+                    <option value='auto'>Automatic</option>
+                    <option value='enable'>Can Access</option>
+                    <option value='disable'>Disable Access</option>
+                </select></span></div>
+            </div>`);
             if (selectedSections[sec]) {
                 $(`#section-btn-${sec}`).addClass('green-section-btn').removeClass('red-section-btn');
+                $(`#section-dropdown-${sec}`).val('enable');
             } else if (selectedSections[sec] === false) {
                 $(`#section-btn-${sec}`).addClass('red-section-btn').removeClass('green-section-btn');
+                $(`#section-dropdown-${sec}`).val('disable');
             } else {
                 $(`#section-btn-${sec}`).removeClass('red-section-btn').removeClass('green-section-btn');
+                $(`#section-dropdown-${sec}`).val('auto');
             }
         });
         $('#chunk-section-picker-selectall-btn').prop('checked', Object.keys(selectedSections).filter(num => selectedSections[num]).length === Object.keys(sectionUrls).length);
-        redrawSectionCanvas();
         $('#myModal43').show();
         modalOutsideTime = Date.now();
     }
 }
 
-// Redraws the section canvas
-let redrawSectionCanvas = function() {
+
+// Calculates what each pixel should be based on the hovered section
+let calculateSectionPixels = function(inputNum) {
     let blackPixelArr = [];
     for (let j = 0; j < 192; j++) {
         blackPixelArr[j] = [];
@@ -7085,11 +7107,14 @@ let redrawSectionCanvas = function() {
             contextSection.drawImage(sectionImgs[section], 0, 0);
         }
     });
-    if (hoveredNumSection !== '-1') {
-        for (let j = 0; j < 192; j++) {
-            for (let k = 0; k < 192; k++) {
-                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
-                    blackPixelArr[j][k] = .5;
+    if (inputNum !== -1) {
+        let touched = false;
+        let imageData = contextSection.getImageData(0, 0, 192, 192).data;
+        for (let y = 0; y < 192; y++) {
+            for (let x = 0; x < 192; x++) {
+                let index = (y * 192 + x) * 4;
+                if (imageData[index] > 0) {
+                    blackPixelArr[x][y] = 0.5;
                 }
             }
         }
@@ -7097,12 +7122,14 @@ let redrawSectionCanvas = function() {
         contextSection.fillRect(0, 0, 192, 192);
         let imgSection = new Image();
         imgSection.crossOrigin = 'anonymous';
-        imgSection.src = sectionUrls[hoveredNumSection];
+        imgSection.src = sectionUrls[inputNum];
         contextSection.drawImage(imgSection, 0, 0);
-        for (let j = 0; j < 192; j++) {
-            for (let k = 0; k < 192; k++) {
-                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
-                    blackPixelArr[j][k] = 0;
+        imageData = contextSection.getImageData(0, 0, 192, 192).data;
+        for (let y = 0; y < 192; y++) {
+            for (let x = 0; x < 192; x++) {
+                let index = (y * 192 + x) * 4;
+                if (imageData[index] > 0) {
+                    blackPixelArr[x][y] = 0;
                 }
             }
         }
@@ -7113,6 +7140,7 @@ let redrawSectionCanvas = function() {
                         for (let kk = -1; kk <= 1; kk++) {
                             if (j + jj >= 0 && k + kk >= 0 && j + jj < 192 && k + kk < 192 && blackPixelArr[j + jj][k + kk] > 0) {
                                 highlightPixelArr[j][k] = 1;
+                                touched = true;
                             }
                         }
                     }
@@ -7125,12 +7153,36 @@ let redrawSectionCanvas = function() {
                 }
             }
         }
+        if (!touched) {
+            resetSectionVars(sectionChunkId);
+            return [];
+        }
     } else {
-        for (let j = 0; j < 192; j++) {
-            for (let k = 0; k < 192; k++) {
-                if (contextSection.getImageData(j, k, 1, 1).data[0] > 0) {
-                    blackPixelArr[j][k] = 0;
+        let imageData = contextSection.getImageData(0, 0, 192, 192).data;
+        for (let y = 0; y < 192; y++) {
+            for (let x = 0; x < 192; x++) {
+                let index = (y * 192 + x) * 4;
+                if (imageData[index] > 0) {
+                    blackPixelArr[x][y] = 0;
                 }
+            }
+        }
+    }
+    return [blackPixelArr, highlightPixelArr];
+}
+
+// Redraws the section canvas
+let redrawSectionCanvas = function() {
+    if (!doneInitDraw) {
+        globalBlackPixelArr = {};
+        globalHighlightPixelArr = {};
+        doneInitDraw = true;
+    }
+    if (Object.keys(globalBlackPixelArr).length === 0 || Object.keys(globalHighlightPixelArr).length === 0) {
+        $('.chunk-section-canvas-spinner').show();
+        for (let i = -1; i <= Object.keys(sectionUrls).length; i++) {
+            if (i !== 0 && (!globalBlackPixelArr.hasOwnProperty(i) || !globalHighlightPixelArr.hasOwnProperty(i))) {
+                [globalBlackPixelArr[i], globalHighlightPixelArr[i]] = calculateSectionPixels(i);
             }
         }
     }
@@ -7138,51 +7190,66 @@ let redrawSectionCanvas = function() {
     contextSection.drawImage(sectionImgMain, 0, 0);
     for (let j = 0; j < 192; j++) {
         for (let k = 0; k < 192; k++) {
-            contextSection.fillStyle = "rgba(0, 0, 0, 1)";
-            contextSection.globalAlpha = blackPixelArr[j][k];
-            contextSection.fillRect(j, k, 1, 1);
-            if (highlightPixelArr[j][k] > 0) {
+            if (globalBlackPixelArr[hoveredNumSection][j][k] > 0) {
+                contextSection.fillStyle = "rgba(0, 0, 0, 1)";
+                contextSection.globalAlpha = globalBlackPixelArr[hoveredNumSection][j][k];
+                contextSection.fillRect(j, k, 1, 1);
+            }
+            if (globalHighlightPixelArr[hoveredNumSection][j][k] > 0) {
                 contextSection.fillStyle = "rgba(255, 255, 0, 1)";
-                contextSection.globalAlpha = highlightPixelArr[j][k];
+                contextSection.globalAlpha = globalHighlightPixelArr[hoveredNumSection][j][k];
                 contextSection.fillRect(j, k, 1, 1);
             }
         }
     }
+    $('.chunk-section-canvas-spinner').hide();
 }
 
 // On-hover section canvas
 let hoverSectionCanvas = function(section) {
+    if (!doneInitDraw) return;
     hoveredNumSection = section;
     redrawSectionCanvas();
 }
 
 // On-select section canvas
 let selectSectionCanvas = function(section) {
-    if (selectedSections[section]) {
-        selectedSections[section] = false;
-        $(`#section-btn-${section}`).addClass('red-section-btn').removeClass('green-section-btn');
-    } else if (selectedSections[section] === false) {
-        delete selectedSections[section];
-        $(`#section-btn-${section}`).removeClass('red-section-btn').removeClass('green-section-btn');
-    } else {
+    if (!(testMode || !(viewOnly || inEntry || locked))) {
+        return;
+    }
+    let selectVal = $(`#section-dropdown-${section}`).val();
+    if (selectVal === 'enable') {
         selectedSections[section] = true;
         $(`#section-btn-${section}`).addClass('green-section-btn').removeClass('red-section-btn');
+    } else if (selectVal === 'disable') {
+        selectedSections[section] = false;
+        $(`#section-btn-${section}`).addClass('red-section-btn').removeClass('green-section-btn');
+    } else if (selectVal === 'auto') {
+        delete selectedSections[section];
+        $(`#section-btn-${section}`).removeClass('red-section-btn').removeClass('green-section-btn');
     }
     $('#chunk-section-picker-selectall-btn').prop('checked', Object.keys(selectedSections).filter(num => selectedSections[num]).length === Object.keys(sectionUrls).length);
+    doneInitDraw = false;
     redrawSectionCanvas();
 }
 
 // Selects all chunk sections
 let selectAllChunkSections = function() {
+    if (!(testMode || !(viewOnly || inEntry || locked))) {
+        return;
+    }
     !!chunkInfo['sections'][sectionChunkId] && Object.keys(chunkInfo['sections'][sectionChunkId]).forEach((section) => {
         if ($('#chunk-section-picker-selectall-btn').prop('checked')) {
             selectedSections[section] = true;
             $(`#section-btn-${section}`).addClass('green-section-btn').removeClass('red-section-btn');
+            $(`#section-dropdown-${section}`).val('enable');
         } else {
             delete selectedSections[section];
             $(`#section-btn-${section}`).removeClass('red-section-btn').removeClass('green-section-btn');
+            $(`#section-dropdown-${section}`).val('auto');
         }
     });
+    doneInitDraw = false;
     redrawSectionCanvas();
 }
 
@@ -7458,12 +7525,12 @@ let removeFriend = function(friendMid, friendName) {
 // Opens the add locked slayer task modal
 let openSlayerLocked = function() {
     slayerLockedModalOpen = true;
-    $('#slayer-locked-input').val('');
+    $('#slayer-locked-input').val(slayerLocked.hasOwnProperty('level') ? slayerLocked['level'] : '');
     $('#slayer-locked-data').html('<div><div class="slayer-locked-cancel" onclick="addSlayerLocked(true)">Cancel</div><div class="slayer-locked-proceed disabled" onclick="addSlayerLocked()">Lock Slayer</div></div>');
     $('#slayer-locked-dropdown').empty().append(`<option value='${'Select a task'}'>${'Select a task'}</option>`);
     $('#slayer-locked-dropdown').append(`<option value="${'Manually Locked'}">${"Manually Locked"}</option>`);
     Object.keys(slayerTasks).forEach((task) => {
-        $('#slayer-locked-dropdown').append(`<option value="${task}">${task}</option>`);
+        $('#slayer-locked-dropdown').append(`<option ${slayerLocked.hasOwnProperty('monster') && slayerLocked['monster'] === task && 'selected'} value="${task}">${task}</option>`);
     });
     $('#myModal22').show();
 }
@@ -8293,7 +8360,7 @@ let changeBiSFilterBy = function() {
 }
 
 // Opens the highest2 modal
-let openHighest2 = function() {
+let openHighest2 = function(notScrollTop) {
     if (!inEntry && !importMenuOpen && !manualModalOpen && !detailsModalOpen && !notesModalOpen && !highscoreMenuOpen && !helpMenuOpen) {
         onMobile && hideMobileMenu();
         highest2ModalOpen = true;
@@ -8453,7 +8520,7 @@ let openHighest2 = function() {
         $(`.${highestTab2}-body`).show();
         $('#myModal12_2').show();
         modalOutsideTime = Date.now();
-        document.getElementById('highest2-data').scrollTop = 0;
+        !notScrollTop && (document.getElementById('highest2-data').scrollTop = 0);
     }
 }
 
@@ -8497,6 +8564,10 @@ let addPassiveSkill = function(close, skill) {
                 passiveSkill = {};
             }
             passiveSkill[skill] = level;
+            if (skill === 'Slayer' && !!slayerLocked && slayerLocked.hasOwnProperty('level')) {
+                slayerLocked['level'] = level;
+                openHighest2(true);
+            }
             calcCurrentChallengesCanvas(true);
             setData();
             $('#myModal28').hide();
