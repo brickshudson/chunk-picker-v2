@@ -1586,12 +1586,15 @@ let calcChallenges = function(chunks, baseChunkData) {
         });
         let highestChanged;
         let tempHighest = {};
-        Object.keys(newValids).filter(skill => skillNames.includes(skill)).forEach((skill) => {
+        !rules["Highest Level"] && Object.keys(newValids).filter(skill => skillNames.includes(skill)).forEach((skill) => {
+            let tempItems = {};
             tempHighest[skill] = Object.keys(newValids[skill]).sort((a, b) => newValids[skill][a] - newValids[skill][b]);
-            Object.keys(newValids[skill]).filter(task => chunkInfo['challenges'][skill][task]['mustBeHighest'] && chunkInfo['challenges'][skill][task].hasOwnProperty('Tasks')).sort((a, b) => newValids[skill][b] - newValids[skill][a]).some(task => {
+            Object.keys(newValids[skill]).filter(task => chunkInfo['challenges'][skill][task]['mustBeHighest'] && chunkInfo['challenges'][skill][task].hasOwnProperty('Tasks')).sort((a, b) => newValids[skill][a] - newValids[skill][b]).some(task => {
                 let uniqueItem = !tempItemSkill.hasOwnProperty(skill);
                 tempItemSkill.hasOwnProperty(skill) && chunkInfo['challenges'][skill][task].hasOwnProperty('Items') && chunkInfo['challenges'][skill][task]['Items'].some(item => {
-                    if (item.replaceAll(/\*/g, '').includes('[+]') && itemsPlus.hasOwnProperty(item.replaceAll(/\*/g, ''))) {
+                    if (tempItems.hasOwnProperty(item.replaceAll(/\*/g, ''))) {
+                        // --
+                    } else if (item.replaceAll(/\*/g, '').includes('[+]') && itemsPlus.hasOwnProperty(item.replaceAll(/\*/g, ''))) {
                         if (!!itemsPlus[item.replaceAll(/\*/g, '')] && itemsPlus[item.replaceAll(/\*/g, '')].filter((plus) => { return !!baseChunkData['items'][plus] && (!Object.values(baseChunkData['items'][plus]).includes('primary-Farming') || rules['Farming Primary']) && !tools[plus] && (skill !== 'Magic' || !magicTools[plus]) && !tempItemSkill[skill].hasOwnProperty(plus) }).length > 0) {
                             uniqueItem = true;
                             return true;
@@ -1604,7 +1607,10 @@ let calcChallenges = function(chunks, baseChunkData) {
                     }
                 });
                 if (uniqueItem) {
-                    return true;
+                    chunkInfo['challenges'][skill][task].hasOwnProperty('Items') && chunkInfo['challenges'][skill][task]['Items'].forEach(item => {
+                        tempItems[item.replaceAll(/\*/g, '')] = true;
+                    });
+                    return false;
                 }
                 highestChanged = false;
                 Object.keys(chunkInfo['challenges'][skill][task]['Tasks']).filter(subTask => skillNames.includes(chunkInfo['challenges'][skill][task]['Tasks'][subTask])).some(subTask => {
@@ -1617,7 +1623,10 @@ let calcChallenges = function(chunks, baseChunkData) {
                     }
                 });
                 if (!highestChanged) {
-                    return true;
+                    chunkInfo['challenges'][skill][task].hasOwnProperty('Items') && chunkInfo['challenges'][skill][task]['Items'].forEach(item => {
+                        tempItems[item.replaceAll(/\*/g, '')] = true;
+                    });
+                    return false;
                 }
             });
         });
